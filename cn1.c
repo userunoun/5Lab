@@ -12,9 +12,11 @@ int main()
     data[6] = data[0] ^ data[2] ^ data[4];
     data[5] = data[0] ^ data[1] ^ data[4];
     data[3] = data[0] ^ data[1] ^ data[2];
+    
     printf("\nEncoded data is\n");
     for (i = 0; i < 7; i++)
         printf("%d", data[i]);
+
     printf("\n\nEnter received data bits one by one\n");
     for (i = 0; i < 7; i++)
         scanf("%d", &dataatrec[i]);
@@ -22,6 +24,7 @@ int main()
     c2 = dataatrec[5] ^ dataatrec[4] ^ dataatrec[1] ^ dataatrec[0];
     c3 = dataatrec[3] ^ dataatrec[2] ^ dataatrec[1] ^ dataatrec[0];
     c = c3 * 4 + c2 * 2 + c1;
+
     if (c == 0)
     {
         printf("\nNo error while transmission of data\n");
