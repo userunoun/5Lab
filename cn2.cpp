@@ -1,91 +1,79 @@
 #include <iostream>
-#include <time.h>
 #include <cstdlib>
 #include <ctime>
-#include <unistd.h>
+#include <unistd.h> 
 using namespace std;
-class timer
-{
+
+class Timer {
 private:
     unsigned long begTime;
 
 public:
-    void start()
-    {
+    void start() {
         begTime = clock();
     }
-    unsigned long elapsedTime()
-    {
+
+    unsigned long elapsedTime() {
         return ((unsigned long)clock() - begTime) / CLOCKS_PER_SEC;
     }
-    bool isTimeout(unsigned long seconds)
-    {
-        return seconds >= elapsedTime();
+
+    bool isTimeout(unsigned long seconds) {
+        return elapsedTime() >= seconds;
     }
 };
-int main()
-{
+
+int main() {
     int frames[] = {1, 2, 3, 4};
-    unsigned long seconds = 5;
+    const unsigned long timeoutSeconds = 5;
     srand(time(NULL));
-    timer t;
-    cout << "Sender has to send frames : ";
-    for (int i = 0; i < 4; i++)
-        cout << frames[i] << " ";
+
+    Timer t;
+    cout << "Sender has to send frames: ";
+    for (int frame : frames) {
+        cout << frame << " ";
+    }
     cout << endl;
+
     int count = 0;
     bool delay = false;
+
     cout << endl
-         << "Sender\t\t\t\t\tReceiver" << endl;
-    do
-    {
+         << "Sender\t\t\t\tReceiver" << endl;
+
+    while (count < 4) {
         bool timeout = false;
-        cout << "Sending Frame : " << frames[count];
+        cout << "Sending Frame: " << frames[count];
         cout.flush();
-        cout << "\t\t";
+
         t.start();
-        if (rand() % 2)
-        {
-            int to = 2450 + rand() % (6400 - 2450) + 1;
-            for (int i = 0; i < 6400; i++)
-                for (int j = 0; j < to; j++)
-                {
-                }
-        }
-        if (t.elapsedTime() <= seconds)
-        {
-            cout << "Received Frame : " << frames[count] << " ";
-            if (delay)
-            {
-                cout << "Duplicate";
+        usleep(rand() % 2000000 + 500000); 
+
+        if (!t.isTimeout(timeoutSeconds)) {
+            cout << "\t\tReceived Frame: " << frames[count];
+            if (delay) {
+                cout << " (Duplicate)";
                 delay = false;
             }
             cout << endl;
             count++;
-        }
-        else
-        {
-            cout << "---" << endl;
+        } else {
+            cout << "\t\t---" << endl;
             cout << "Timeout" << endl;
             timeout = true;
         }
+
         t.start();
-        if (rand() % 2 || !timeout)
-        {
-            int to = 24500 + rand() % (64000 - 24500) + 1;
-            for (int i = 0; i < 64000; i++)
-                for (int j = 0; j < to; j++)
-                {
-                }
-            if (t.elapsedTime() > seconds)
-            {
+        if (rand() % 2 || !timeout) {
+            usleep(rand() % 2000000 + 500000); 
+
+            if (t.isTimeout(timeoutSeconds)) {
                 cout << "Delayed Ack" << endl;
-                count--;
                 delay = true;
+                count--;
+            } else if (!timeout) {
+                cout << "Acknowledgement: " << frames[count - 1] << endl;
             }
-            else if (!timeout)
-                cout << "Acknowledgement : " << frames[count] - 1 << endl;
         }
-    } while (count != 4);
+    }
     return 0;
 }
