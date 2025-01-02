@@ -51,7 +51,7 @@ int main()
     Station stationA("Station A");
     Station stationB("Station B");
 
-    for (int i = 1; i <= 5; i++)
+    for (int i = 1; i <= 10; i++)
     {
         cout << "Scenario " << i << endl;
         stationA.send();
